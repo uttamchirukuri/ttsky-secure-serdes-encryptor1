@@ -1,7 +1,7 @@
 # Tiny Tapeout project information
 project:
   title:        "Secure SERDES Encryptor"      # Project title
-  author:       "Yugasni S"      # Your name
+  author:       "Yugasni S, Peketi Reshma, Chirukuri Uttam, Kiran Kumar J P, Sree Vidya J, Shylashree N, RV College of Engineering"      # Your name
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
   description:  "Lightweight encryption logic with serial input/output using SERDES"      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
