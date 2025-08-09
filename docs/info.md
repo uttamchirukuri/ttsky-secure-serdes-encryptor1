@@ -31,6 +31,7 @@ This design demonstrates a lightweight encryption method in a serial‑in serial
 **Input and Output Ports**
 
 **Inputs**
+
 * ui_in (8 bits):
   * ui_in[0] – start: Initiates the serial data capture and encryption process when high.
   * ui_in[1] – a_bit: Serial data input bit for operand A (MSB-first).
@@ -51,29 +52,35 @@ This design demonstrates a lightweight encryption method in a serial‑in serial
 ## Internal Architecture
 
 **Finite State Machine (FSM)**
+
 The FSM in secure_serdes_encryptor_core controls the serial data capture, encryption, and output process with the following states:
+
 1. **IDLE:**
+   
 Waits for start signal to go high.
 
 When start is high, clears internal registers A, B, and bit_cnt.
 
 Transitions to the SHIFT state.
 
-3. **SHIFT:**
+2. **SHIFT:**
+   
 Serially shifts in a_bit into register A and b_bit into register B (MSB-first).
 
 Increments bit_cnt each clock cycle.
 
 When bit_cnt reaches 7 (8 bits captured), transitions to the ENCRYPT state.
 
-5. **ENCRYPT:**
+3. **ENCRYPT:**
+   
 Performs bitwise XOR of A, B, and key[7:0] to produce encrypted_byte.
 
 Resets bit_cnt to 0.
 
 Transitions to the OUTPUT state.
 
-7. **OUTPUT:**
+4. **OUTPUT:**
+   
 Shifts out encrypted_byte one bit at a time through cipher_out (MSB-first).
 
 Increments bit_cnt each cycle.
@@ -81,6 +88,7 @@ Increments bit_cnt each cycle.
 When bit_cnt reaches 7 (all 8 bits output), sets done high and returns to IDLE.
 
 **Encryption Logic**
+
 Encryption is a simple byte-wise XOR:
 
   encrypted_byte = encrypted_byte=A⊕B⊕key[7:0]
@@ -90,17 +98,23 @@ Both A and B are captured serially over 8 clock cycles before encryption.
 Output is serialized in the OUTPUT state, matching the input bit order.
 
 **Reset Behavior**
+
 When rst is high:
+
 1. FSM state is forced to IDLE.
+   
 2. Internal registers A, B, bit_cnt, encrypted_byte, cipher_out, and done are cleared.
+   
 Guarantees a deterministic startup sequence and prevents spurious outputs.
 
 **Unused Logic Handling**
-All unused inputs (ui_in[3] to ui_in[7], uio_in) are ignored.
 
-All unused outputs (uo_out[2] to uo_out[7], uio_out, uio_oe) are tied to zero.
+* All unused inputs (ui_in[3] to ui_in[7], uio_in) are ignored.
+
+* All unused outputs (uo_out[2] to uo_out[7], uio_out, uio_oe) are tied to zero.
 
 ## How to test
+
 1] Apply a reset by driving rst_n low and then high again.
 
 2] Set ui_in[0] = 1 for one clock cycle to start encryption.
@@ -116,6 +130,7 @@ All unused outputs (uo_out[2] to uo_out[7], uio_out, uio_oe) are tied to zero.
 7] In simulation, you can monitor tb.vcd (waveform) or check the reconstructed byte from uo_out[0].
 
 ## External hardware
+
 1] No external hardware is required.
 
 2] For demo purposes, the cipher_out can be connected to an LED or serial interface to observe the bitstream.
