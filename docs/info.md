@@ -31,7 +31,7 @@ This design demonstrates a lightweight encryption method in a serial‑in serial
 **Input and Output Ports**
 
 **Inputs**
-ui_in (8 bits):
+* ui_in (8 bits):
   ui_in[0] – start: Initiates the serial data capture and encryption process when high.
   ui_in[1] – a_bit: Serial data input bit for operand A (MSB-first).  
   ui_in[2] – b_bit: Serial data input bit for operand B (MSB-first).
@@ -90,11 +90,17 @@ All unused outputs (uo_out[2] to uo_out[7], uio_out, uio_oe) are tied to zero.
 
 ## How to test
 1] Apply a reset by driving rst_n low and then high again.
+
 2] Set ui_in[0] = 1 for one clock cycle to start encryption.
+
 3] Provide 8 bits serially on ui_in[1] (a_bit) and ui_in[2] (b_bit), MSB first, one per clock cycle.
+
 4] After 8 bits are loaded, the encryption logic computes the XOR result with the key.
+
 5] The encrypted byte is then shifted out on uo_out[0] (1 bit per cycle).
+
 6] When all 8 bits are output, uo_out[1] asserts high to indicate completion.
+
 7] In simulation, you can monitor tb.vcd (waveform) or check the reconstructed byte from uo_out[0].
 
 ## External hardware
