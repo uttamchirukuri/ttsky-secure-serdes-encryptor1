@@ -42,11 +42,17 @@ This design demonstrates a lightweight encryption method in a serial‑in serial
 * rst_n – Active-low asynchronous reset.
 
 **Outputs**
+
 * uo_out (8 bits):
-  uo_out[0] – cipher_bit: Serial output bit from the encrypted byte (MSB-first).
-  uo_out[1] – done: High for one cycle after all 8 encrypted bits have been output.
-  uo_out[2] to uo_out[7] – Unused; set to zero.
+  
+   * uo_out[0] – cipher_bit: Serial output bit from the encrypted byte (MSB-first).
+   
+   * uo_out[1] – done: High for one cycle after all 8 encrypted bits have been output.
+   
+   * uo_out[2] to uo_out[7] – Unused; set to zero.
+  
 * uio_out (8 bits): Not used; tied to zero to act as high-impedance inputs.
+  
 * uio_oe (8 bits): Not used; tied to zero to maintain high-impedance state.
 
 ## Internal Architecture
@@ -57,35 +63,35 @@ The FSM in secure_serdes_encryptor_core controls the serial data capture, encryp
 
 1. **IDLE:**
    
-Waits for start signal to go high.
-
-When start is high, clears internal registers A, B, and bit_cnt.
-
-Transitions to the SHIFT state.
+     Waits for start signal to go high.
+     
+     When start is high, clears internal registers A, B, and bit_cnt.
+     
+     Transitions to the SHIFT state.
 
 2. **SHIFT:**
    
-Serially shifts in a_bit into register A and b_bit into register B (MSB-first).
-
-Increments bit_cnt each clock cycle.
-
-When bit_cnt reaches 7 (8 bits captured), transitions to the ENCRYPT state.
+     Serially shifts in a_bit into register A and b_bit into register B (MSB-first).
+     
+     Increments bit_cnt each clock cycle.
+     
+     When bit_cnt reaches 7 (8 bits captured), transitions to the ENCRYPT state.
 
 3. **ENCRYPT:**
    
-Performs bitwise XOR of A, B, and key[7:0] to produce encrypted_byte.
-
-Resets bit_cnt to 0.
-
-Transitions to the OUTPUT state.
+     Performs bitwise XOR of A, B, and key[7:0] to produce encrypted_byte.
+     
+     Resets bit_cnt to 0.
+     
+     Transitions to the OUTPUT state.
 
 4. **OUTPUT:**
    
-Shifts out encrypted_byte one bit at a time through cipher_out (MSB-first).
-
-Increments bit_cnt each cycle.
-
-When bit_cnt reaches 7 (all 8 bits output), sets done high and returns to IDLE.
+     Shifts out encrypted_byte one bit at a time through cipher_out (MSB-first).
+     
+     Increments bit_cnt each cycle.
+     
+     When bit_cnt reaches 7 (all 8 bits output), sets done high and returns to IDLE.
 
 **Encryption Logic**
 
